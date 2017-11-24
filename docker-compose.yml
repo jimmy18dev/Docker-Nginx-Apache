@@ -1,0 +1,37 @@
+version: '2'
+services:
+  phpfpm:
+    build: ./
+    # image: php:5.6
+    # container_name: datalink_phpfpm
+    restart: always
+    volumes:
+      - ./www/:/var/www/html
+    expose:
+      - "9000"
+  nginx:
+    image: nginx
+    restart: always
+    volumes:
+      - ./nginx/conf/nginx.conf:/etc/nginx/conf/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    volumes_from:
+      - phpfpm
+    ports:
+      - 80:80
+  weba:
+    image: tutum/apache-php
+    environment:
+      - ALLOW_OVERRIDE=true
+    ports:
+      - "9000:80"
+    volumes:
+      - ./www/weba:/app
+  webb:
+    image: tutum/apache-php
+    environment:
+      - ALLOW_OVERRIDE=true
+    ports:
+      - "7000:80"
+    volumes:
+      - ./www/webb:/app
